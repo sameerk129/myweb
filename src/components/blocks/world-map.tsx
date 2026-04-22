@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { Country } from "@/data/travel";
+import world from "@svg-maps/world";
 
 /**
  * Lightweight equirectangular projection world canvas.
@@ -25,8 +26,8 @@ export function WorldMap({
   onSelect?: (id: string) => void;
 }) {
   const reduced = useReducedMotion();
-  const W = 1000;
-  const H = 500;
+  const W = 1010;
+  const H = 666;
 
   const project = React.useCallback(
     (lon: number, lat: number) => ({
@@ -55,9 +56,13 @@ export function WorldMap({
 
   const lons = React.useMemo(() => Array.from({ length: 13 }, (_, i) => -180 + i * 30), []);
   const lats = React.useMemo(() => Array.from({ length: 7 }, (_, i) => -90 + i * 30), []);
+  const visitedIds = React.useMemo(
+    () => new Set(countries.map((c) => c.id.toLowerCase())),
+    [countries],
+  );
 
   return (
-    <div className="border-border bg-card/40 ring-soft relative aspect-[2/1] min-h-[280px] w-full overflow-hidden rounded-2xl border">
+    <div className="border-border bg-card/40 ring-soft relative aspect-[1010/666] min-h-[280px] w-full overflow-hidden rounded-2xl border">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="xMidYMid meet"
@@ -94,12 +99,24 @@ export function WorldMap({
           })}
         </g>
 
-        {/* continent silhouettes (stylized, lightweight fallback) */}
-        <g fill="var(--foreground)" opacity="0.16">
-          <path d="M120 170 C190 120, 320 120, 370 180 C410 230, 400 290, 350 340 C300 390, 230 390, 180 350 C130 310, 95 240, 120 170 Z" />
-          <path d="M360 120 C410 95, 470 105, 500 150 C530 195, 525 255, 485 305 C450 350, 390 360, 350 330 C310 300, 305 255, 325 210 C335 185, 340 145, 360 120 Z" />
-          <path d="M520 150 C580 110, 700 105, 760 155 C810 195, 835 270, 800 330 C760 395, 670 410, 600 385 C525 360, 470 295, 475 235 C478 200, 495 170, 520 150 Z" />
-          <path d="M735 300 C770 285, 820 295, 845 330 C865 360, 860 400, 830 420 C800 440, 760 438, 740 410 C720 382, 714 320, 735 300 Z" />
+        {/* world countries (real geometry) */}
+        <g stroke="var(--border)" strokeWidth="0.4">
+          {world.locations.map((loc: { id: string; path: string }) => {
+            if (loc.id === "aq") return null; // hide Antarctica strip for cleaner composition
+            const visited = visitedIds.has(loc.id.toLowerCase());
+            return (
+              <path
+                key={loc.id}
+                d={loc.path}
+                fill={
+                  visited
+                    ? "color-mix(in oklab, var(--grad-from) 24%, var(--foreground))"
+                    : "var(--foreground)"
+                }
+                fillOpacity={visited ? 0.22 : 0.13}
+              />
+            );
+          })}
         </g>
 
         {/* dotted texture */}
