@@ -17,7 +17,11 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative isolate flex min-h-[92vh] items-center pt-28 sm:pt-32"
+      className="relative isolate flex min-h-[92vh] items-start"
+      style={{
+        paddingTop:
+          "calc(var(--floating-nav-top, 0.75rem) + var(--floating-nav-height, 56px) + 24px)",
+      }}
     >
       <AuroraBg />
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-8">
@@ -35,17 +39,17 @@ export function Hero() {
             {profile.availability}
           </Badge>
 
-          <h1 className="text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-[5rem]">
+          <h1 className="text-4xl leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl lg:text-[5rem]">
             Backend systems that
             <br className="hidden sm:block" />{" "}
             <span className="text-gradient">stay calm at scale.</span>
           </h1>
 
-          <p className="max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
-            I&apos;m <span className="text-foreground">Sameer Kumar</span> — a Senior Backend Engineer
-            with 9+ years scaling distributed platforms in production. Currently at{" "}
-            <span className="text-foreground">Atlassian</span>, where I took Jira Service
-            Management from 10K → 60K agents and lifted SLA from 99.9% → 99.99%.
+          <p className="text-muted-foreground max-w-2xl text-base leading-relaxed text-pretty sm:text-lg">
+            I&apos;m <span className="text-foreground">Sameer Kumar</span> — a Senior Backend
+            Engineer with 9+ years scaling distributed platforms in production. Currently at{" "}
+            <span className="text-foreground">Atlassian</span>, where I took Jira Service Management
+            from 10K → 60K agents and lifted SLA from 99.9% → 99.99%.
           </p>
 
           <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -54,7 +58,10 @@ export function Hero() {
               size="lg"
               className="group"
               onClick={() =>
-                track({ name: "cta_click", payload: { id: "hero_resume", href: siteConfig.resumeUrl } })
+                track({
+                  name: "cta_click",
+                  payload: { id: "hero_resume", href: siteConfig.resumeUrl },
+                })
               }
             >
               <a href={siteConfig.resumeUrl} target="_blank" rel="noreferrer">
@@ -67,7 +74,9 @@ export function Hero() {
               asChild
               variant="secondary"
               size="lg"
-              onClick={() => track({ name: "cta_click", payload: { id: "hero_contact", href: "#contact" } })}
+              onClick={() =>
+                track({ name: "cta_click", payload: { id: "hero_contact", href: "#contact" } })
+              }
             >
               <a href="#contact">
                 <Sparkles className="size-4" />
@@ -93,10 +102,14 @@ export function Hero() {
             <CopyEmailButton variant="ghost" />
           </div>
 
-          <dl className="mt-10 grid w-full max-w-3xl grid-cols-2 gap-x-8 gap-y-3 border-t border-border pt-6 text-sm sm:grid-cols-4">
+          <dl className="border-border mt-10 grid w-full max-w-3xl grid-cols-2 gap-x-8 gap-y-3 border-t pt-6 text-sm sm:grid-cols-4">
             <Stat label="Currently" value="Atlassian" />
             <Stat label="Education" value={profile.education.school} />
-            <Stat label="Based" value={siteConfig.location} icon={<MapPin className="size-3.5" />} />
+            <Stat
+              label="Based"
+              value={siteConfig.location}
+              icon={<MapPin className="size-3.5" />}
+            />
             <Stat label="Open to" value="Sr / Staff roles" />
           </dl>
         </motion.div>
@@ -105,19 +118,11 @@ export function Hero() {
   );
 }
 
-function Stat({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: string;
-  icon?: React.ReactNode;
-}) {
+function Stat({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">{label}</dt>
-      <dd className="mt-1 inline-flex items-center gap-1.5 text-foreground">
+      <dt className="text-muted-foreground text-[11px] tracking-[0.16em] uppercase">{label}</dt>
+      <dd className="text-foreground mt-1 inline-flex items-center gap-1.5">
         {icon}
         {value}
       </dd>

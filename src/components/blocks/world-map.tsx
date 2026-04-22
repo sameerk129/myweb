@@ -57,11 +57,11 @@ export function WorldMap({
   const lats = React.useMemo(() => Array.from({ length: 7 }, (_, i) => -90 + i * 30), []);
 
   return (
-    <div className="border-border bg-card/40 ring-soft relative w-full overflow-hidden rounded-2xl border">
+    <div className="border-border bg-card/40 ring-soft relative aspect-[2/1] min-h-[280px] w-full overflow-hidden rounded-2xl border">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="xMidYMid meet"
-        className="block h-auto min-h-[260px] w-full"
+        className="absolute inset-0 h-full w-full"
         role="img"
         aria-label="World map showing visited countries"
       >
@@ -83,13 +83,7 @@ export function WorldMap({
         <rect width={W} height={H} fill="url(#wm-glow)" />
 
         {/* graticule */}
-        <g
-          stroke="currentColor"
-          strokeOpacity="0.14"
-          strokeWidth="0.6"
-          fill="none"
-          className="text-foreground"
-        >
+        <g stroke="var(--foreground)" strokeOpacity="0.18" strokeWidth="0.6" fill="none">
           {lons.map((lon) => {
             const { x } = project(lon, 0);
             return <line key={`lo-${lon}`} x1={x} y1={0} x2={x} y2={H} />;
@@ -101,7 +95,7 @@ export function WorldMap({
         </g>
 
         {/* continent silhouettes (stylized, lightweight fallback) */}
-        <g fill="currentColor" className="text-foreground" opacity="0.1">
+        <g fill="var(--foreground)" opacity="0.16">
           <path d="M120 170 C190 120, 320 120, 370 180 C410 230, 400 290, 350 340 C300 390, 230 390, 180 350 C130 310, 95 240, 120 170 Z" />
           <path d="M360 120 C410 95, 470 105, 500 150 C530 195, 525 255, 485 305 C450 350, 390 360, 350 330 C310 300, 305 255, 325 210 C335 185, 340 145, 360 120 Z" />
           <path d="M520 150 C580 110, 700 105, 760 155 C810 195, 835 270, 800 330 C760 395, 670 410, 600 385 C525 360, 470 295, 475 235 C478 200, 495 170, 520 150 Z" />
@@ -109,12 +103,12 @@ export function WorldMap({
         </g>
 
         {/* dotted texture */}
-        <g className="text-foreground">
+        <g>
           {Array.from({ length: 600 }).map((_, i) => {
             const x = (i * 53) % W;
             const y = (i * 97) % H;
             const r = ((i * 13) % 7 === 0 ? 1.15 : 0.68) * (y > 80 && y < 420 ? 1 : 0.5);
-            return <circle key={i} cx={x} cy={y} r={r} fill="currentColor" opacity={0.045} />;
+            return <circle key={i} cx={x} cy={y} r={r} fill="var(--foreground)" opacity={0.075} />;
           })}
         </g>
 

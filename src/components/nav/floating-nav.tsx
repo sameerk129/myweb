@@ -15,19 +15,32 @@ export function FloatingNav() {
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = React.useState(false);
   const { open: openPalette } = useCommandPalette();
+  const navRef = React.useRef<HTMLElement | null>(null);
 
   useMotionValueEvent(scrollY, "change", (y) => {
     setScrolled(y > 32);
   });
 
+  React.useEffect(() => {
+    const updateNavMetrics = () => {
+      const navHeight = navRef.current?.offsetHeight ?? 56;
+      document.documentElement.style.setProperty("--floating-nav-height", `${navHeight}px`);
+      document.documentElement.style.setProperty("--floating-nav-top", "0.75rem");
+    };
+
+    updateNavMetrics();
+    window.addEventListener("resize", updateNavMetrics);
+    return () => window.removeEventListener("resize", updateNavMetrics);
+  }, [scrolled]);
+
   return (
-    <header
-      className="fixed inset-x-0 top-3 z-40"
-      data-testid="floating-nav"
-    >
+    <header className="fixed inset-x-0 top-3 z-40" data-testid="floating-nav">
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-8">
         <AnimatePresence mode="wait" initial={false}>
           <motion.nav
+            ref={(node) => {
+              navRef.current = node;
+            }}
             key={scrolled ? "compact" : "wide"}
             initial={{ y: -16, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -47,14 +60,14 @@ export function FloatingNav() {
               <Logo />
               <span className="hidden sm:inline">{siteConfig.shortName}</span>
             </Link>
-            <div className="mx-1 hidden h-5 w-px bg-border sm:block" />
+            <div className="bg-border mx-1 hidden h-5 w-px sm:block" />
             <ul className="flex flex-1 items-center justify-center gap-0.5">
               {navItems.map((item) => (
                 <li key={item.id}>
                   <a
                     href={item.href}
                     className={cn(
-                      "rounded-full px-3 py-1.5 text-[13px] text-foreground/75 transition-colors",
+                      "text-foreground/75 rounded-full px-3 py-1.5 text-[13px] transition-colors",
                       "hover:bg-accent hover:text-accent-foreground",
                     )}
                   >
@@ -72,7 +85,7 @@ export function FloatingNav() {
               aria-label="Open command palette"
             >
               <Command className="size-3.5" aria-hidden />
-              <span className="text-[11px] tracking-wide text-muted-foreground">⌘K</span>
+              <span className="text-muted-foreground text-[11px] tracking-wide">⌘K</span>
             </Button>
             <ThemeToggle className="relative" />
           </motion.nav>
@@ -86,7 +99,7 @@ function Logo() {
   return (
     <span
       aria-hidden
-      className="grid h-7 w-7 place-items-center rounded-lg text-background"
+      className="text-background grid h-7 w-7 place-items-center rounded-lg"
       style={{
         backgroundImage:
           "linear-gradient(135deg, var(--grad-from), var(--grad-via), var(--grad-to))",
