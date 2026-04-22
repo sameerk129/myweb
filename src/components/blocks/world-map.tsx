@@ -53,26 +53,21 @@ export function WorldMap({
     return segs;
   }, [points]);
 
-  const lons = React.useMemo(
-    () => Array.from({ length: 13 }, (_, i) => -180 + i * 30),
-    [],
-  );
-  const lats = React.useMemo(
-    () => Array.from({ length: 7 }, (_, i) => -90 + i * 30),
-    [],
-  );
+  const lons = React.useMemo(() => Array.from({ length: 13 }, (_, i) => -180 + i * 30), []);
+  const lats = React.useMemo(() => Array.from({ length: 7 }, (_, i) => -90 + i * 30), []);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl border border-border bg-card/40 ring-soft">
+    <div className="border-border bg-card/40 ring-soft relative w-full overflow-hidden rounded-2xl border">
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="block w-full h-auto"
+        preserveAspectRatio="xMidYMid meet"
+        className="block h-auto min-h-[260px] w-full"
         role="img"
         aria-label="World map showing visited countries"
       >
         <defs>
           <radialGradient id="wm-glow" cx="50%" cy="50%" r="60%">
-            <stop offset="0%" stopColor="var(--grad-from)" stopOpacity="0.35" />
+            <stop offset="0%" stopColor="var(--grad-from)" stopOpacity="0.26" />
             <stop offset="100%" stopColor="transparent" />
           </radialGradient>
           <linearGradient id="wm-arc" x1="0" x2="1">
@@ -83,30 +78,17 @@ export function WorldMap({
             <stop offset="0%" stopColor="var(--grad-from)" />
             <stop offset="100%" stopColor="var(--grad-to)" />
           </radialGradient>
-          <mask id="wm-fade">
-            <rect width={W} height={H} fill="black" />
-            <rect
-              width={W}
-              height={H}
-              fill="url(#wm-fade-grad)"
-            />
-            <linearGradient id="wm-fade-grad" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="white" stopOpacity="0.2" />
-              <stop offset="50%" stopColor="white" stopOpacity="1" />
-              <stop offset="100%" stopColor="white" stopOpacity="0.2" />
-            </linearGradient>
-          </mask>
         </defs>
 
-        <rect width={W} height={H} fill="url(#wm-glow)" opacity="0.5" />
+        <rect width={W} height={H} fill="url(#wm-glow)" />
 
         {/* graticule */}
         <g
-          stroke="color-mix(in oklab, currentColor 14%, transparent)"
+          stroke="currentColor"
+          strokeOpacity="0.14"
           strokeWidth="0.6"
           fill="none"
           className="text-foreground"
-          mask="url(#wm-fade)"
         >
           {lons.map((lon) => {
             const { x } = project(lon, 0);
@@ -118,22 +100,21 @@ export function WorldMap({
           })}
         </g>
 
-        {/* dotted continent suggestion */}
+        {/* continent silhouettes (stylized, lightweight fallback) */}
+        <g fill="currentColor" className="text-foreground" opacity="0.1">
+          <path d="M120 170 C190 120, 320 120, 370 180 C410 230, 400 290, 350 340 C300 390, 230 390, 180 350 C130 310, 95 240, 120 170 Z" />
+          <path d="M360 120 C410 95, 470 105, 500 150 C530 195, 525 255, 485 305 C450 350, 390 360, 350 330 C310 300, 305 255, 325 210 C335 185, 340 145, 360 120 Z" />
+          <path d="M520 150 C580 110, 700 105, 760 155 C810 195, 835 270, 800 330 C760 395, 670 410, 600 385 C525 360, 470 295, 475 235 C478 200, 495 170, 520 150 Z" />
+          <path d="M735 300 C770 285, 820 295, 845 330 C865 360, 860 400, 830 420 C800 440, 760 438, 740 410 C720 382, 714 320, 735 300 Z" />
+        </g>
+
+        {/* dotted texture */}
         <g className="text-foreground">
           {Array.from({ length: 600 }).map((_, i) => {
             const x = (i * 53) % W;
             const y = (i * 97) % H;
-            const r = ((i * 13) % 7 === 0 ? 1.2 : 0.7) * ((y > 80 && y < 420) ? 1 : 0.5);
-            return (
-              <circle
-                key={i}
-                cx={x}
-                cy={y}
-                r={r}
-                fill="currentColor"
-                opacity={0.06}
-              />
-            );
+            const r = ((i * 13) % 7 === 0 ? 1.15 : 0.68) * (y > 80 && y < 420 ? 1 : 0.5);
+            return <circle key={i} cx={x} cy={y} r={r} fill="currentColor" opacity={0.045} />;
           })}
         </g>
 
@@ -177,7 +158,12 @@ export function WorldMap({
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.05 * i + 0.1, type: "spring", stiffness: 240, damping: 16 }}
+                  transition={{
+                    delay: 0.05 * i + 0.1,
+                    type: "spring",
+                    stiffness: 240,
+                    damping: 16,
+                  }}
                 />
                 <title>{`${p.flag} ${p.name} — ${p.represents}`}</title>
               </g>
