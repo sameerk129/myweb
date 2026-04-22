@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { Country } from "@/data/travel";
 import world from "@svg-maps/world";
+import pathBounds from "svg-path-bounds";
 
 /**
  * Lightweight equirectangular projection world canvas.
@@ -37,10 +38,25 @@ export function WorldMap({
     [],
   );
 
-  const points = React.useMemo(
-    () => countries.map((c) => ({ ...c, ...project(c.lon, c.lat) })),
-    [countries, project],
-  );
+  const points = React.useMemo(() => {
+    const mapById = new Map<string, string>(
+      world.locations.map((loc: { id: string; path: string }) => [loc.id.toLowerCase(), loc.path]),
+    );
+    return countries.map((c) => {
+      const countryPath = mapById.get(c.id.toLowerCase());
+      if (countryPath) {
+        const [minX, minY, maxX, maxY] = pathBounds(countryPath);
+        return {
+          ...c,
+          x: (minX + maxX) / 2,
+          y: (minY + maxY) / 2,
+        };
+      }
+
+      // Fallback when a country path id isn't found.
+      return { ...c, ...project(c.lon, c.lat) };
+    });
+  }, [countries, project]);
 
   const arcs = React.useMemo(() => {
     const segs: { d: string; id: string }[] = [];
@@ -79,6 +95,10 @@ export function WorldMap({
             <stop offset="0%" stopColor="var(--grad-from)" />
             <stop offset="100%" stopColor="var(--grad-to)" />
           </linearGradient>
+          <linearGradient id="wm-visited-country" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#22d3ee" />
+            <stop offset="100%" stopColor="#818cf8" />
+          </linearGradient>
           <radialGradient id="wm-marker" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="var(--grad-from)" />
             <stop offset="100%" stopColor="var(--grad-to)" />
@@ -100,7 +120,7 @@ export function WorldMap({
         </g>
 
         {/* world countries (real geometry) */}
-        <g stroke="var(--border)" strokeWidth="0.4">
+        <g stroke="var(--border)" strokeWidth="0.4" shapeRendering="geometricPrecision">
           {world.locations.map((loc: { id: string; path: string }) => {
             if (loc.id === "aq") return null; // hide Antarctica strip for cleaner composition
             const visited = visitedIds.has(loc.id.toLowerCase());
@@ -108,12 +128,10 @@ export function WorldMap({
               <path
                 key={loc.id}
                 d={loc.path}
-                fill={
-                  visited
-                    ? "color-mix(in oklab, var(--grad-from) 24%, var(--foreground))"
-                    : "var(--foreground)"
-                }
-                fillOpacity={visited ? 0.22 : 0.13}
+                fill={visited ? "url(#wm-visited-country)" : "var(--foreground)"}
+                fillOpacity={visited ? 0.38 : 0.13}
+                stroke={visited ? "#22d3ee" : "var(--border)"}
+                strokeOpacity={visited ? 0.65 : 1}
               />
             );
           })}

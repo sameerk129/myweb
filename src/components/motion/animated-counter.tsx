@@ -28,22 +28,39 @@ export function AnimatedCounter({
   className,
 }: AnimatedCounterProps) {
   const ref = React.useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-30%" });
+  const inView = useInView(ref, { once: true, amount: 0.2 });
   const reduced = useReducedMotion();
   const mv = useMotionValue(0);
-  const formatted = useTransform(mv, (latest) =>
-    `${prefix}${latest.toLocaleString(undefined, {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    })}${suffix}`,
+  const formatted = useTransform(
+    mv,
+    (latest) =>
+      `${prefix}${latest.toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}${suffix}`,
   );
 
   React.useEffect(() => {
-    if (!inView) return;
     if (reduced) {
       mv.set(value);
       return;
     }
+
+    if (!inView) {
+      // Fallback for environments where IntersectionObserver timing is flaky:
+      // if already visible, render the final value instead of staying at 0.
+      const node = ref.current;
+      if (node) {
+        const rect = node.getBoundingClientRect();
+        const viewport = window.innerHeight || document.documentElement.clientHeight;
+        const isVisibleNow = rect.top < viewport * 0.9 && rect.bottom > viewport * 0.1;
+        if (isVisibleNow) {
+          mv.set(value);
+        }
+      }
+      return;
+    }
+
     const controls = animate(mv, value, {
       duration,
       ease: [0.22, 1, 0.36, 1],

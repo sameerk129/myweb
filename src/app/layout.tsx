@@ -41,25 +41,23 @@ const personJsonLd = {
   worksFor: { "@type": "Organization", name: "Atlassian" },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
       className={`${sans.variable} ${mono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="relative flex min-h-full flex-col bg-background text-foreground">
+      <body className="bg-background text-foreground relative flex min-h-full flex-col">
         <a
           href="#hero"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-foreground focus:px-3 focus:py-2 focus:text-background"
+          className="focus:bg-foreground focus:text-background sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[80] focus:rounded-md focus:px-3 focus:py-2"
         >
           Skip to content
         </a>
         <Providers>
           <FloatingNav />
-          <main id="content" className="flex-1">
+          <main id="content" className="flex-1 pb-24 sm:pb-0">
             {children}
           </main>
           <Footer />
