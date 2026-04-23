@@ -3,16 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import {
-  BriefcaseBusiness,
-  Command,
-  FolderGit2,
-  Mail,
-  Moon,
-  Plane,
-  Sun,
-  Wrench,
-} from "lucide-react";
+import { BriefcaseBusiness, Command, FolderGit2, Mail, Moon, Sun, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navItems } from "@/data/navigation";
 import { siteConfig } from "@/lib/site-config";
@@ -21,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useCommandPalette } from "@/components/nav/command-palette";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
+import { featureFlags } from "@/config/feature-flags";
 
 export function FloatingNav() {
   const { scrollY } = useScroll();
@@ -123,7 +115,7 @@ export function FloatingNav() {
         </div>
       </header>
       <MobileThemeFab />
-      <MobileBottomNav />
+      <MobileBottomNav onHomeClick={handleHomeClick} />
     </>
   );
 }
@@ -143,19 +135,34 @@ function Logo() {
   );
 }
 
-function MobileBottomNav() {
-  const mobileItems = React.useMemo(
+function MobileBottomNav({
+  onHomeClick,
+}: {
+  onHomeClick: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+}) {
+  const hideLabels = featureFlags.mobileBottomNavHideLabels;
+  const sectionItems = React.useMemo(
     () =>
       [
         { id: "work", label: "Work", href: "#experience-heading", icon: BriefcaseBusiness },
         { id: "projects", label: "Projects", href: "#projects-heading", icon: FolderGit2 },
         { id: "skills", label: "Skills", href: "#skills-heading", icon: Wrench },
-        { id: "travel", label: "Travel", href: "#travel-heading", icon: Plane },
         { id: "contact", label: "Contact", href: "#contact-heading", icon: Mail },
       ] as const,
     [],
   );
-  const [activeId, setActiveId] = React.useState<string>(mobileItems[0].id as string);
+  const mobileItems = React.useMemo(
+    () =>
+      [
+        sectionItems[0],
+        sectionItems[1],
+        { id: "home", label: "Top", href: "/" },
+        sectionItems[2],
+        sectionItems[3],
+      ] as const,
+    [sectionItems],
+  );
+  const [activeId, setActiveId] = React.useState<string>("home");
   const manualTargetRef = React.useRef<string | null>(null);
   const manualLockTimeoutRef = React.useRef<number | null>(null);
 
@@ -176,7 +183,7 @@ function MobileBottomNav() {
 
   React.useEffect(() => {
     const getOrderedHeadings = () => {
-      return mobileItems
+      return sectionItems
         .map((item) => {
           const el = document.getElementById(item.href.replace("#", ""));
           if (!el) return null;
@@ -188,7 +195,7 @@ function MobileBottomNav() {
 
     const getCurrentByViewport = () => {
       const threshold = Math.max(72, window.innerHeight * 0.28);
-      let current = mobileItems[0].id as string;
+      let current = sectionItems[0].id as string;
       let nextCandidate: string | null = null;
       let nextTop = Number.POSITIVE_INFINITY;
       const orderedHeadings = getOrderedHeadings();
@@ -204,9 +211,9 @@ function MobileBottomNav() {
       }
 
       if (window.scrollY < 8 && nextCandidate) {
-        return mobileItems[0].id as string;
+        return "home";
       }
-      return current || nextCandidate || (mobileItems[0].id as string);
+      return current || nextCandidate || "home";
     };
 
     const updateActiveSection = () => {
@@ -220,8 +227,11 @@ function MobileBottomNav() {
 
     const updateFromHash = () => {
       const hash = window.location.hash;
-      if (!hash) return;
-      const match = mobileItems.find((item) => item.href === hash);
+      if (!hash) {
+        if (window.scrollY < 8) setActiveId("home");
+        return;
+      }
+      const match = sectionItems.find((item) => item.href === hash);
       if (match) {
         setActiveId(match.id as string);
       }
@@ -258,12 +268,40 @@ function MobileBottomNav() {
       window.removeEventListener("resize", updateActiveSection);
       window.removeEventListener("hashchange", updateFromHash);
     };
-  }, [mobileItems]);
+  }, [mobileItems, sectionItems]);
 
   return (
     <nav className="fixed inset-x-4 bottom-4 z-40 sm:hidden" aria-label="Mobile navigation">
       <div className="glass border-border/80 grid grid-cols-5 rounded-2xl border px-1.5 py-1.5 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.55)]">
         {mobileItems.map((item) => {
+          if (item.id === "home") {
+            return (
+              <a
+                key={item.id}
+                href={item.href}
+                onClick={(event) => {
+                  applyManualTargetLock("home");
+                  onHomeClick(event);
+                }}
+                aria-label="Top mobile"
+                className={cn(
+                  "text-foreground/85 hover:text-accent-foreground flex min-h-12 flex-col items-center justify-center rounded-xl px-1 text-[11px] font-semibold transition-colors",
+                  hideLabels ? "gap-0.5" : "gap-1",
+                  activeId === "home" && "text-accent-foreground shadow-none",
+                )}
+              >
+                <span
+                  className={cn(
+                    "border-border/60 grid size-12 place-items-center rounded-full border bg-[linear-gradient(145deg,var(--grad-from),var(--grad-via),var(--grad-to))] shadow-[0_14px_30px_-20px_rgba(0,0,0,0.55)] ring-1 ring-white/15 transition-transform",
+                    activeId === "home" ? "scale-100" : "scale-[0.97]",
+                  )}
+                >
+                  <Logo />
+                </span>
+              </a>
+            );
+          }
+
           const Icon = item.icon;
           return (
             <a
@@ -272,12 +310,13 @@ function MobileBottomNav() {
               onClick={() => applyManualTargetLock(item.id as string)}
               aria-label={`${item.label} mobile`}
               className={cn(
-                "text-foreground/78 hover:bg-accent hover:text-accent-foreground flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[10px] font-medium transition-colors",
+                "text-foreground/78 hover:bg-accent hover:text-accent-foreground flex min-h-12 flex-col items-center justify-center rounded-xl px-1 text-[11px] font-medium transition-colors",
+                hideLabels ? "gap-0.5" : "gap-1",
                 activeId === item.id && "bg-accent text-accent-foreground",
               )}
             >
               <Icon className="size-4" aria-hidden />
-              <span aria-hidden>{item.label}</span>
+              {!hideLabels && <span aria-hidden>{item.label}</span>}
             </a>
           );
         })}

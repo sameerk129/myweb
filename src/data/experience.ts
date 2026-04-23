@@ -38,8 +38,7 @@ export const experiences: Experience[] = [
     start: "May 2022",
     end: "Aug 2023",
     location: "Bengaluru",
-    blurb:
-      "Platformized booking — multi-team scalable usage and BizApp adoption from 10% → 70%.",
+    blurb: "Platformized booking — multi-team scalable usage and BizApp adoption from 10% → 70%.",
     highlights: [
       "Migrated booking service to multi-team scalable usage model.",
       "Saved ~5 engineer-days/month per consuming service.",
@@ -55,7 +54,7 @@ export const experiences: Experience[] = [
     role: "Software Engineer II",
     start: "Jul 2018",
     end: "May 2022",
-    location: "Mumbai",
+    location: "Bangalore",
     blurb:
       "Built core platform services — auth, GDPR readiness, artwork approval pipeline ($1M ARR).",
     highlights: [
@@ -74,8 +73,7 @@ export const experiences: Experience[] = [
     start: "May 2015",
     end: "Jul 2018",
     location: "Gurugram",
-    blurb:
-      "Warehouse robotics — TCP/UDP communication, remote diagnostics for fleet operations.",
+    blurb: "Warehouse robotics — TCP/UDP communication, remote diagnostics for fleet operations.",
     highlights: [
       "Built TCP/UDP warehouse automation communication system.",
       "Enabled remote diagnosis, materially reducing travel cost.",
