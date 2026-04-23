@@ -123,6 +123,7 @@ export function Hero() {
               srcDark="/logos/dark/iit-kanpur.png"
               highlight
               logoClassName="h-5 w-auto max-w-[1.9rem]"
+              darkLogoClassName="dark:invert dark:brightness-[1.35] dark:contrast-125"
             />
             <OrgLogo
               label="Instawork"
@@ -170,6 +171,7 @@ function OrgLogo({
   highlight = false,
   hideLabel = false,
   logoClassName,
+  darkLogoClassName,
 }: {
   label: string;
   srcLight: string;
@@ -177,12 +179,13 @@ function OrgLogo({
   highlight?: boolean;
   hideLabel?: boolean;
   logoClassName?: string;
+  darkLogoClassName?: string;
 }) {
   return (
     <div
       className={
         highlight
-          ? "text-foreground/90 inline-flex items-center gap-2.5 rounded-full border border-cyan-300/35 bg-gradient-to-r from-cyan-500/12 to-violet-500/12 px-3 py-2 text-xs shadow-[0_0_0_1px_rgba(34,211,238,0.1),0_8px_24px_-16px_rgba(99,102,241,0.45)]"
+          ? "text-foreground/90 inline-flex items-center gap-2.5 rounded-full border border-cyan-300/35 bg-gradient-to-r from-cyan-500/12 to-violet-500/12 px-3 py-2 text-xs shadow-[0_0_0_1px_rgba(34,211,238,0.1),0_8px_24px_-16px_rgba(99,102,241,0.45)] dark:border-white/12 dark:from-white/[0.035] dark:to-white/[0.02] dark:shadow-[0_6px_18px_-16px_rgba(0,0,0,0.45)]"
           : "border-border/70 bg-card/70 text-foreground/85 inline-flex items-center gap-2.5 rounded-full border px-3 py-2 text-xs"
       }
     >
@@ -203,6 +206,7 @@ function OrgLogo({
           className={cn(
             "hidden h-4.5 w-auto max-w-[4.8rem] object-contain dark:block",
             logoClassName,
+            darkLogoClassName,
           )}
         />
       </span>
