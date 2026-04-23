@@ -20,12 +20,24 @@ import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useCommandPalette } from "@/components/nav/command-palette";
 import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
 
 export function FloatingNav() {
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = React.useState(false);
   const { open: openPalette } = useCommandPalette();
   const navRef = React.useRef<HTMLDivElement | null>(null);
+  const pathname = usePathname();
+
+  const handleHomeClick = React.useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      if (pathname !== "/") return;
+      event.preventDefault();
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [pathname],
+  );
 
   useMotionValueEvent(scrollY, "change", (y) => {
     setScrolled(y > 32);
@@ -70,6 +82,7 @@ export function FloatingNav() {
                   href="/"
                   className="ml-2 flex items-center gap-2 px-2 text-sm font-semibold tracking-tight"
                   aria-label={`${siteConfig.shortName} home`}
+                  onClick={handleHomeClick}
                 >
                   <Logo />
                   <span>{siteConfig.shortName}</span>

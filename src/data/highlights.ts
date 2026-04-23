@@ -26,7 +26,7 @@ export const highlights: Highlight[] = [
   },
   {
     id: "years",
-    value: 9,
+    value: 11,
     suffix: "+",
     label: "Years building",
     caption: "Distributed backends in high-traffic production.",

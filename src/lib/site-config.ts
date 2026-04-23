@@ -5,14 +5,14 @@ export const siteConfig = {
   headline:
     "Senior Backend Engineer · Distributed Systems · Scalability · Reliability · Platform Engineering",
   summary:
-    "9+ years building and scaling distributed backend systems in high-traffic production environments — reliability, performance, architecture, cloud migration, observability, and operational excellence.",
+    "11+ years building and scaling distributed backend systems in high-traffic production environments — reliability, performance, architecture, cloud migration, observability, and operational excellence.",
   url: "https://sameerk.dev",
   email: "sameerk1292@gmail.com",
   location: "Bengaluru / Remote",
   resumeUrl: "/resume/sameer-kumar-resume.pdf",
   socials: {
     linkedin: "https://www.linkedin.com/in/sameerk1292",
-    github: "https://github.com/sameerk1292",
+    github: "https://github.com/in/sameerk129",
     twitter: "https://twitter.com/sameerk1292",
   },
   keywords: [

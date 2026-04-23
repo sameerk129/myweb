@@ -7,10 +7,13 @@ import { LinkedinIcon } from "@/components/ui/brand-icons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AuroraBg } from "@/components/blocks/aurora-bg";
+import { LogoScatterBg } from "@/components/blocks/logo-scatter-bg";
 import { CopyEmailButton } from "@/components/blocks/copy-email-button";
 import { siteConfig } from "@/lib/site-config";
 import { profile } from "@/data/profile";
 import { track } from "@/lib/analytics";
+import { featureFlags } from "@/config/feature-flags";
+import { cn } from "@/lib/utils";
 
 export function Hero() {
   const reduced = useReducedMotion();
@@ -20,10 +23,11 @@ export function Hero() {
       className="relative isolate flex min-h-[92vh] items-start"
       style={{
         paddingTop:
-          "calc(var(--floating-nav-top, 0.75rem) + var(--floating-nav-height, 56px) + 24px)",
+          "calc(var(--floating-nav-top, 0.75rem) + var(--floating-nav-height, 56px) + 36px)",
       }}
     >
       <AuroraBg />
+      {featureFlags.heroLogoScatterBackground && <LogoScatterBg />}
       <div className="mx-auto w-full max-w-6xl px-6 sm:px-8">
         <motion.div
           initial={reduced ? false : { opacity: 0, y: 20 }}
@@ -47,7 +51,7 @@ export function Hero() {
 
           <p className="text-muted-foreground max-w-2xl text-base leading-relaxed text-pretty sm:text-lg">
             I&apos;m <span className="text-foreground">Sameer Kumar</span> — a Senior Backend
-            Engineer with 9+ years scaling distributed platforms in production. Currently at{" "}
+            Engineer with 11+ years scaling distributed platforms in production. Currently at{" "}
             <span className="text-foreground">Atlassian</span>, where I took Jira Service Management
             from 10K → 60K agents and lifted SLA from 99.9% → 99.99%.
           </p>
@@ -102,6 +106,47 @@ export function Hero() {
             <CopyEmailButton variant="ghost" />
           </div>
 
+          <div className="mt-3 flex w-full max-w-4xl flex-wrap items-center gap-2.5">
+            <p className="text-muted-foreground w-full text-[11px] tracking-[0.16em] uppercase">
+              Experience Across
+            </p>
+            <OrgLogo
+              label="Atlassian"
+              srcLight="/logos/light/atlassian.svg"
+              srcDark="/logos/dark/atlassian.svg"
+              highlight
+              logoClassName="h-5.5 w-auto max-w-[1.6rem]"
+            />
+            <OrgLogo
+              label="IIT Kanpur"
+              srcLight="/logos/light/iit-kanpur.png"
+              srcDark="/logos/dark/iit-kanpur.png"
+              highlight
+              logoClassName="h-5 w-auto max-w-[1.9rem]"
+            />
+            <OrgLogo
+              label="Instawork"
+              srcLight="/logos/light/instawork.svg"
+              srcDark="/logos/dark/instawork.svg"
+              hideLabel
+              logoClassName="h-4.5 w-auto max-w-[5.1rem]"
+            />
+            <OrgLogo
+              label="GreyOrange"
+              srcLight="/logos/light/greyorange.png"
+              srcDark="/logos/dark/greyorange.png"
+              hideLabel
+              logoClassName="h-4.5 w-auto max-w-[5.6rem]"
+            />
+            <OrgLogo
+              label="Bizongo"
+              srcLight="/logos/light/bizongo.svg"
+              srcDark="/logos/dark/bizongo.svg"
+              hideLabel
+              logoClassName="h-4.5 w-auto max-w-[4.7rem]"
+            />
+          </div>
+
           <dl className="border-border mt-10 grid w-full max-w-3xl grid-cols-2 gap-x-8 gap-y-3 border-t pt-6 text-sm sm:grid-cols-4">
             <Stat label="Currently" value="Atlassian" />
             <Stat label="Education" value={profile.education.school} />
@@ -115,6 +160,54 @@ export function Hero() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function OrgLogo({
+  label,
+  srcLight,
+  srcDark,
+  highlight = false,
+  hideLabel = false,
+  logoClassName,
+}: {
+  label: string;
+  srcLight: string;
+  srcDark: string;
+  highlight?: boolean;
+  hideLabel?: boolean;
+  logoClassName?: string;
+}) {
+  return (
+    <div
+      className={
+        highlight
+          ? "text-foreground/90 inline-flex items-center gap-2.5 rounded-full border border-cyan-300/35 bg-gradient-to-r from-cyan-500/12 to-violet-500/12 px-3 py-2 text-xs shadow-[0_0_0_1px_rgba(34,211,238,0.1),0_8px_24px_-16px_rgba(99,102,241,0.45)]"
+          : "border-border/70 bg-card/70 text-foreground/85 inline-flex items-center gap-2.5 rounded-full border px-3 py-2 text-xs"
+      }
+    >
+      <span className="flex h-7 min-w-[2.5rem] items-center justify-center overflow-hidden rounded-sm bg-white/[0.06] px-1.5">
+        <img
+          src={srcLight}
+          alt=""
+          aria-hidden
+          className={cn(
+            "block h-4.5 w-auto max-w-[4.8rem] object-contain dark:hidden",
+            logoClassName,
+          )}
+        />
+        <img
+          src={srcDark}
+          alt=""
+          aria-hidden
+          className={cn(
+            "hidden h-4.5 w-auto max-w-[4.8rem] object-contain dark:block",
+            logoClassName,
+          )}
+        />
+      </span>
+      {!hideLabel && <span>{label}</span>}
+    </div>
   );
 }
 
