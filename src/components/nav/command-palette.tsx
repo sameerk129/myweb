@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   Briefcase,
   FileDown,
+  FlaskConical,
   Mail,
   MapPin,
   MessageCircle,
@@ -81,13 +82,13 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+            className="border-border bg-card w-full max-w-xl overflow-hidden rounded-2xl border shadow-2xl"
             role="dialog"
             aria-label="Command palette"
             aria-modal
           >
             <Command label="Command palette" className="bg-card text-foreground">
-              <div className="border-b border-border p-3">
+              <div className="border-border border-b p-3">
                 <Command.Input
                   autoFocus
                   placeholder="Type a command or search…"
@@ -98,11 +99,14 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                 />
               </div>
               <Command.List className="max-h-[60vh] overflow-y-auto p-2">
-                <Command.Empty className="px-3 py-6 text-center text-sm text-muted-foreground">
+                <Command.Empty className="text-muted-foreground px-3 py-6 text-center text-sm">
                   No results.
                 </Command.Empty>
 
-                <Command.Group heading="Jump to" className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <Command.Group
+                  heading="Jump to"
+                  className="text-muted-foreground text-[11px] tracking-wider uppercase"
+                >
                   <Item icon={<Rocket className="size-4" />} onSelect={() => go("#hero")}>
                     Top
                   </Item>
@@ -115,6 +119,12 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                   <Item icon={<Rocket className="size-4" />} onSelect={() => go("#projects")}>
                     Projects
                   </Item>
+                  <Item
+                    icon={<FlaskConical className="size-4" />}
+                    onSelect={() => go("#experiments")}
+                  >
+                    Experiments
+                  </Item>
                   <Item icon={<MapPin className="size-4" />} onSelect={() => go("#travel")}>
                     Travel
                   </Item>
@@ -123,7 +133,10 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                   </Item>
                 </Command.Group>
 
-                <Command.Group heading="Actions" className="mt-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+                <Command.Group
+                  heading="Actions"
+                  className="text-muted-foreground mt-2 text-[11px] tracking-wider uppercase"
+                >
                   <Item
                     icon={<FileDown className="size-4" />}
                     onSelect={() => {
@@ -133,28 +146,50 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                   >
                     Download resume
                   </Item>
-                  <Item icon={<Mail className="size-4" />} onSelect={() => go(`mailto:${siteConfig.email}`)}>
+                  <Item
+                    icon={<Mail className="size-4" />}
+                    onSelect={() => go(`mailto:${siteConfig.email}`)}
+                  >
                     Email me
                   </Item>
                   <Item
                     icon={<LinkedinIcon className="size-4" />}
-                    onSelect={() => go(siteConfig.socials.linkedin, { external: true, cta: "palette_linkedin" })}
+                    onSelect={() =>
+                      go(siteConfig.socials.linkedin, { external: true, cta: "palette_linkedin" })
+                    }
                   >
                     LinkedIn <External />
                   </Item>
                   <Item
                     icon={<GithubIcon className="size-4" />}
-                    onSelect={() => go(siteConfig.socials.github, { external: true, cta: "palette_github" })}
+                    onSelect={() =>
+                      go(siteConfig.socials.github, { external: true, cta: "palette_github" })
+                    }
                   >
                     GitHub <External />
                   </Item>
                 </Command.Group>
 
-                <Command.Group heading="Theme" className="mt-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <Item icon={<Moon className="size-4" />} onSelect={() => { setTheme("dark"); setOpen(false); }}>
+                <Command.Group
+                  heading="Theme"
+                  className="text-muted-foreground mt-2 text-[11px] tracking-wider uppercase"
+                >
+                  <Item
+                    icon={<Moon className="size-4" />}
+                    onSelect={() => {
+                      setTheme("dark");
+                      setOpen(false);
+                    }}
+                  >
                     Dark mode
                   </Item>
-                  <Item icon={<Sun className="size-4" />} onSelect={() => { setTheme("light"); setOpen(false); }}>
+                  <Item
+                    icon={<Sun className="size-4" />}
+                    onSelect={() => {
+                      setTheme("light");
+                      setOpen(false);
+                    }}
+                  >
                     Light mode
                   </Item>
                 </Command.Group>
@@ -191,5 +226,5 @@ function Item({
 }
 
 function External() {
-  return <ArrowUpRight className="size-3.5 text-muted-foreground" aria-hidden />;
+  return <ArrowUpRight className="text-muted-foreground size-3.5" aria-hidden />;
 }
